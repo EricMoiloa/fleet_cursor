@@ -23,6 +23,7 @@ import { ClientFormattedDate } from '@/components/client-formatted-date';
 import { apiGet, apiPost } from '@/lib/apiClient';
 import { useAuth } from '@/lib/auth';
 import { Clock, Car, Calendar, CheckCircle, Gauge, MapPin } from 'lucide-react';
+import { PostTripReviewModal } from '@/components/driver/post-trip-review-modal';
 
 type ApiTrip = {
   id: number | string;
@@ -89,6 +90,8 @@ export default function DriverTripsPage() {
 
   const [allTrips, setAllTrips] = useState<TripRow[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [reviewOpen, setReviewOpen] = useState(false);
+  const [reviewTripId, setReviewTripId] = useState<string | null>(null);
 
   // Dialog state (start/end)
   const [startOpen, setStartOpen] = useState(false);
@@ -190,6 +193,11 @@ export default function DriverTripsPage() {
     setEndFuel(undefined);
     setPostTripNotes('');
     setEndOpen(true);
+  }
+
+  function openReview(trip: TripRow) {
+    setReviewTripId(trip.id);
+    setReviewOpen(true);
   }
 
   async function submitStart() {
@@ -447,6 +455,11 @@ export default function DriverTripsPage() {
               </DialogContent>
             </Dialog>
           )}
+          {trip.status === 'Completed' && (
+            <Button variant="outline" onClick={() => openReview(trip)}>
+              Leave Review
+            </Button>
+          )}
         </CardFooter>
       </Card>
     );
@@ -494,28 +507,34 @@ export default function DriverTripsPage() {
             </CardHeader>
             <CardContent>
               <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Trip ID</TableHead>
-                    <TableHead>Vehicle</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Distance</TableHead>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Trip ID</TableHead>
+                  <TableHead>Vehicle</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Distance</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {completedTrips.map((log) => (
+                  <TableRow key={log.id}>
+                    <TableCell className="font-mono text-xs">#{log.id.slice(-4)}</TableCell>
+                    <TableCell>{log.vehicle.make} {log.vehicle.model}</TableCell>
+                    <TableCell>
+                      <ClientFormattedDate date={log.startTime ?? ''} />
+                    </TableCell>
+                    <TableCell>
+                      {((log.endOdometer ?? 0) - (log.startOdometer ?? 0)).toLocaleString()} km
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button size="sm" variant="outline" onClick={() => openReview(log)}>
+                        Review
+                      </Button>
+                    </TableCell>
                   </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {completedTrips.map((log) => (
-                    <TableRow key={log.id}>
-                      <TableCell className="font-mono text-xs">#{log.id.slice(-4)}</TableCell>
-                      <TableCell>{log.vehicle.make} {log.vehicle.model}</TableCell>
-                      <TableCell>
-                        <ClientFormattedDate date={log.startTime ?? ''} />
-                      </TableCell>
-                      <TableCell>
-                        {((log.endOdometer ?? 0) - (log.startOdometer ?? 0)).toLocaleString()} km
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
+                ))}
+              </TableBody>
               </Table>
               {completedTrips.length === 0 && (
                 <p className="py-8 text-center text-muted-foreground">No completed logs to display.</p>
@@ -524,6 +543,16 @@ export default function DriverTripsPage() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      <PostTripReviewModal
+        tripId={reviewTripId}
+        open={reviewOpen}
+        onOpenChange={(open) => {
+          setReviewOpen(open);
+          if (!open) setReviewTripId(null);
+        }}
+        onSubmitted={loadTrips}
+      />
     </div>
   );
 }

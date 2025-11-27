@@ -86,6 +86,7 @@ export default function WorkerDashboard() {
   const [rows, setRows] = useState<MyRequest[]>([]);
   const [loading, setLoading] = useState(false);
   const [vehicles, setVehicles] = useState<Pick<Vehicle, 'id' | 'make' | 'model' | 'plate_number' | 'type'>[]>([]);
+  const [vehicleTypes, setVehicleTypes] = useState<string[]>([]);
 
   const loadRequests = useCallback(async () => {
     const res = await apiGet<any>('/staff/requests');
@@ -117,8 +118,15 @@ export default function WorkerDashboard() {
             type: v.type ?? '',
           }));
         setVehicles(arr);
+
+        const typesRes = await apiGet<any>('/vehicle-types');
+        const types: string[] = (typesRes?.data ?? typesRes ?? [])
+          .map((t: any) => String(t))
+          .filter(Boolean);
+        setVehicleTypes(types);
       } catch {
         setVehicles([]);
+        setVehicleTypes([]);
       }
     })();
   }, [isModalOpen]);
@@ -196,6 +204,7 @@ export default function WorkerDashboard() {
         isOpen={isModalOpen}
         onOpenChange={setIsModalOpen}
         vehicles={vehicles}
+        vehicleTypes={vehicleTypes}
         onSubmit={handleCreate}
         submitting={loading}
       />
