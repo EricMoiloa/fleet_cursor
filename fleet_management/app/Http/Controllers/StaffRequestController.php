@@ -145,6 +145,7 @@ class StaffRequestController extends Controller
                 'make',
                 'model',
                 'plate_number',
+                'type',
                 'status',
                 'department_id',
             ]);

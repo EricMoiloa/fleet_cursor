@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Storage;
 
 class Vehicle extends Model
 {
@@ -17,6 +18,10 @@ class Vehicle extends Model
         'monthly_mileage_limit','month_to_date_mileage','mileage_period_start',
         'retired_at',
         'current_driver_id',
+    ];
+
+    protected $appends = [
+        'insurance_document_url',
     ];
 
     protected $casts = [
@@ -34,6 +39,15 @@ class Vehicle extends Model
         'last_serviced_at'      => 'date',
         'retired_at'            => 'datetime',
     ];
+
+    public function getInsuranceDocumentUrlAttribute(): ?string
+    {
+        if (! $this->insurance_document_path) {
+            return null;
+        }
+
+        return \Storage::disk('public')->url($this->insurance_document_path);
+    }
 
     public function currentDriver() { return $this->belongsTo(User::class, 'current_driver_id'); }
 
