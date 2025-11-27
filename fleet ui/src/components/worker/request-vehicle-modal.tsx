@@ -16,6 +16,7 @@ export type RequestVehicleModalProps = {
   submitting?: boolean;
   vehicles?: Pick<Vehicle, 'id' | 'make' | 'model' | 'plate_number' | 'type'>[];
   selectedVehicleId?: string;
+  vehicleTypes?: string[];
 };
 
 export function RequestVehicleModal({
@@ -25,6 +26,7 @@ export function RequestVehicleModal({
   submitting,
   vehicles = [],
   selectedVehicleId,
+  vehicleTypes = [],
 }: RequestVehicleModalProps) {
   const [form, setForm] = React.useState<RequestVehicleForm>({
     purpose: '',
@@ -111,15 +113,17 @@ export function RequestVehicleModal({
                 <SelectValue placeholder="Select preferred type" />
               </SelectTrigger>
               <SelectContent>
-                {vehicles
-                  .map((v) => v.type)
-                  .filter(Boolean)
-                  .filter((value, index, self) => self.indexOf(value) === index)
-                  .map((type) => (
-                    <SelectItem key={type} value={type!}>
-                      {type}
-                    </SelectItem>
-                  ))}
+                {(vehicleTypes.length
+                  ? vehicleTypes
+                  : vehicles
+                      .map((v) => v.type)
+                      .filter(Boolean)
+                      .filter((value, index, self) => self.indexOf(value) === index)
+                ).map((type) => (
+                  <SelectItem key={type} value={type!}>
+                    {type}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>

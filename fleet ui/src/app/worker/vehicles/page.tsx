@@ -36,11 +36,14 @@ export default function WorkerViewVehiclesPage() {
   const [loading, setLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedVehicleId, setSelectedVehicleId] = useState<string | undefined>();
+  const [vehicleTypes, setVehicleTypes] = useState<string[]>([]);
 
   const loadVehicles = useCallback(async () => {
     const res = await apiGet<any>('/staff/vehicles');
     const list = (res?.data ?? res ?? []).map(normalizeVehicle);
     setVehicles(list);
+    const typesRes = await apiGet<any>('/vehicle-types');
+    setVehicleTypes((typesRes?.data ?? typesRes ?? []).map((t: any) => String(t)).filter(Boolean));
   }, []);
 
   useEffect(() => {
@@ -67,6 +70,7 @@ export default function WorkerViewVehiclesPage() {
       start_at: form?.datetime ?? null,
       datetime: form?.datetime ?? null,
       vehicle_id: selectedVehicleId ?? form?.vehicle_id ?? undefined,
+      requested_vehicle_type: form?.requested_vehicle_type ?? undefined,
     };
 
     setLoading(true);
@@ -183,6 +187,7 @@ export default function WorkerViewVehiclesPage() {
           model: v.model,
           plate_number: v.plate_number,
         }))}
+        vehicleTypes={vehicleTypes}
         selectedVehicleId={selectedVehicleId}
         onSubmit={handleSubmitFromModal}
         submitting={loading}

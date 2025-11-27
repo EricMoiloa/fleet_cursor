@@ -11,6 +11,8 @@ import {
   Route as TripIcon,
   Fuel,
   ShieldCheck,
+  Wrench,
+  DollarSign,
 } from 'lucide-react';
 import type { UserRole } from '@/lib/types';
 import { SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
@@ -44,6 +46,8 @@ const navConfig: Record<AnyRole, NavItem[]> = {
     { href: '/fleet-manager/trips', label: 'Trips', icon: TripIcon },
     { href: '/fleet-manager/vehicles', label: 'Vehicles', icon: Car },
     { href: '/fleet-manager/trip-logs', label: 'Trip Logs', icon: Fuel },
+    { href: '/fleet-manager/maintenance', label: 'Maintenance', icon: Wrench },
+    { href: '/fleet-manager/finance', label: 'Finance', icon: DollarSign },
   ],
   'Supervisor': [
     { href: '/supervisor/dashboard', label: 'Dashboard', icon: LayoutDashboard },
