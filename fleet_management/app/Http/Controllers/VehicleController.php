@@ -56,7 +56,7 @@ class VehicleController extends Controller
             'insurance_expires_at' => ['nullable','date','after:today'],
             'monthly_mileage_limit'=> ['nullable','integer','min:0'],
             'next_service_odometer'=> ['nullable','integer','min:0'],
-            'insurance_document'   => ['nullable','file','mimes:pdf,jpg,jpeg,png','max:10240'],
+            'insurance_document'   => ['nullable','file','mimetypes:application/pdf,image/jpeg,image/png','mimes:pdf,jpg,jpeg,png','max:12288'],
         ]);
 
         // If department set, it must be within the same ministry
@@ -132,7 +132,7 @@ class VehicleController extends Controller
                 'insurance_expires_at' => ['sometimes','nullable','date','after:today'],
                 'monthly_mileage_limit'=> ['sometimes','nullable','integer','min:0'],
                 'next_service_odometer'=> ['sometimes','nullable','integer','min:0'],
-                'insurance_document'   => ['sometimes','nullable','file','mimes:pdf,jpg,jpeg,png','max:10240'],
+                'insurance_document'   => ['sometimes','nullable','file','mimetypes:application/pdf,image/jpeg,image/png','mimes:pdf,jpg,jpeg,png','max:12288'],
             ]);
 
             // Ensure department & current_driver in same ministry (if set)
@@ -337,13 +337,27 @@ class VehicleController extends Controller
             return $existingPath;
         }
 
-        $path = $request->file('insurance_document')->store('vehicle-insurance', 'public');
+        $path = $request->file('insurance_document')->store('insurance', 'public');
 
         if ($existingPath) {
             Storage::disk('public')->delete($existingPath);
         }
 
         return $path;
+    }
+
+    public function types(Request $request)
+    {
+        $user = $request->user();
+
+        $types = Vehicle::query()
+            ->where('ministry_id', $user->ministry_id)
+            ->whereNotNull('type')
+            ->distinct()
+            ->orderBy('type')
+            ->pluck('type');
+
+        return response()->json(['data' => $types]);
     }
 
 public function myVehicles(Request $request)

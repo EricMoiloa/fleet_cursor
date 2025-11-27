@@ -14,7 +14,7 @@ export type RequestVehicleModalProps = {
   onOpenChange: (open: boolean) => void;
   onSubmit: (form: RequestVehicleForm) => Promise<void> | void; // REQUIRED
   submitting?: boolean;
-  vehicles?: Pick<Vehicle, 'id' | 'make' | 'model' | 'plate_number'>[];
+  vehicles?: Pick<Vehicle, 'id' | 'make' | 'model' | 'plate_number' | 'type'>[];
   selectedVehicleId?: string;
 };
 
@@ -31,6 +31,7 @@ export function RequestVehicleModal({
     origin: '',
     destination: '',
     datetime: '',
+    requested_vehicle_type: undefined,
     vehicle_id: selectedVehicleId ?? undefined,
   });
 
@@ -98,6 +99,29 @@ export function RequestVehicleModal({
               value={form.datetime ?? ''}
               onChange={(e) => handleChange('datetime', e.target.value)}
             />
+          </div>
+
+          <div className="grid gap-2">
+            <Label>Vehicle type</Label>
+            <Select
+              value={form.requested_vehicle_type ?? ''}
+              onValueChange={(v) => handleChange('requested_vehicle_type', v)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select preferred type" />
+              </SelectTrigger>
+              <SelectContent>
+                {vehicles
+                  .map((v) => v.type)
+                  .filter(Boolean)
+                  .filter((value, index, self) => self.indexOf(value) === index)
+                  .map((type) => (
+                    <SelectItem key={type} value={type!}>
+                      {type}
+                    </SelectItem>
+                  ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="grid gap-2">

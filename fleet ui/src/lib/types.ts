@@ -91,6 +91,7 @@ export type RequestVehicleForm = {
   origin?: string;
   destination?: string;
   datetime?: string;      // ISO
+  requested_vehicle_type?: string;
   vehicle_id?: string;    // snake_case
 };
 

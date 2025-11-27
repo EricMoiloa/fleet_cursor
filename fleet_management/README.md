@@ -59,3 +59,8 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Local environment notes
+
+- The project targets PHP 8.2+ and Laravel 12. If you upgrade PHP beyond the currently locked toolchain, ensure the `nunomaduro/collision` dev dependency remains on the latest 8.x release to avoid deprecation noise in CLI error output. If you encounter Collision warnings during local upgrades, run `composer update nunomaduro/collision` after bumping PHP.
+- File uploads (insurance/contract documents) are stored on the `public` filesystem disk. Run `php artisan storage:link` after provisioning to expose uploaded files at `/storage/*`.

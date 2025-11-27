@@ -17,6 +17,7 @@ use App\Http\Controllers\FleetManagerController;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\VehicleInvoiceController;
 use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\NotificationController;
 
 RateLimiter::for('api', function (Request $request) {
     return Limit::perMinute(120)->by(optional($request->user())->id ?: $request->ip());
@@ -60,6 +61,10 @@ Route::prefix('v1')->group(function () {
         });
 
         Route::get('ping', fn() => response()->json(['ok' => true]));
+
+        Route::get('vehicle-types', [VehicleController::class, 'types']);
+        Route::get('notifications', [NotificationController::class, 'index']);
+        Route::get('notifications/unread', [NotificationController::class, 'unread']);
 
 
         /** Vehicles */

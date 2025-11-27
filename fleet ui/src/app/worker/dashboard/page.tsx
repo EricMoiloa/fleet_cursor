@@ -85,7 +85,7 @@ export default function WorkerDashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [rows, setRows] = useState<MyRequest[]>([]);
   const [loading, setLoading] = useState(false);
-  const [vehicles, setVehicles] = useState<Pick<Vehicle, 'id' | 'make' | 'model' | 'plate_number'>[]>([]);
+  const [vehicles, setVehicles] = useState<Pick<Vehicle, 'id' | 'make' | 'model' | 'plate_number' | 'type'>[]>([]);
 
   const loadRequests = useCallback(async () => {
     const res = await apiGet<any>('/staff/requests');
@@ -108,12 +108,13 @@ export default function WorkerDashboard() {
       if (!isModalOpen) return;
       try {
         const res = await apiGet<any>('/staff/vehicles');
-        const arr: Pick<Vehicle, 'id' | 'make' | 'model' | 'plate_number'>[] =
+        const arr: Pick<Vehicle, 'id' | 'make' | 'model' | 'plate_number' | 'type'>[] =
           (res?.data ?? res ?? []).map((v: any) => ({
             id: String(v.id),
             make: v.make ?? '',
             model: v.model ?? '',
             plate_number: v.plate_number ?? '',
+            type: v.type ?? '',
           }));
         setVehicles(arr);
       } catch {
@@ -149,6 +150,7 @@ export default function WorkerDashboard() {
         start_at: form?.datetime ?? null,
         datetime: form?.datetime ?? null,
         vehicle_id: (form as any)?.vehicle_id ?? undefined,
+        requested_vehicle_type: (form as any)?.requested_vehicle_type ?? undefined,
       };
 
       setLoading(true);

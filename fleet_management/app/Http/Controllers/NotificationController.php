@@ -16,6 +16,18 @@ class NotificationController extends Controller
         ]);
     }
 
+    public function unread(Request $request)
+    {
+        $user = $request->user();
+
+        $unread = $user->unreadNotifications()->orderByDesc('created_at')->limit(50)->get();
+
+        return response()->json([
+            'count' => $unread->count(),
+            'data'  => $unread,
+        ]);
+    }
+
     public function markRead(Request $request, $id)
     {
         $user = $request->user();
